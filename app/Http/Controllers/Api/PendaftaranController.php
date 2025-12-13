@@ -41,7 +41,7 @@ class PendaftaranController extends Controller
 
         // Simpan ke Database
         $pendaftaran = Pendaftaran::create([
-            'user_id'           => $request->user()->id, // Ambil ID Wali yg login
+            'user_id'           => $request->user()->id, 
             'instansi_id'       => $request->instansi_id,
             'nama_anak'         => $request->nama_anak,
             'tempat_lahir'      => $request->tempat_lahir,
@@ -62,7 +62,7 @@ class PendaftaranController extends Controller
         ], 201);
     }
 
-    // 2. LIHAT STATUS PENDAFTARAN (Untuk Wali melihat history)
+    // 2. LIHAT STATUS PENDAFTARAN 
     public function myRegistrations(Request $request)
     {
         $data = Pendaftaran::with('instansi') // Sertakan data sekolahnya

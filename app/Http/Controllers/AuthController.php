@@ -9,13 +9,12 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    // 1. REGISTER WALI (Orang Tua) -- SUDAH DIPERBAIKI
+    // 1. REGISTER WALI (Orang Tua) 
     public function registerWali(Request $request) {
         $request->validate([
             'name' => 'required|string',
             'email' => 'required|email|unique:users',
             'nomor_telepon' => 'required|string',
-            // Pindah kesini (Wajib pilih Laki-laki/Perempuan)
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan', 
             'password' => 'required|min:6|confirmed' 
         ]);
@@ -24,7 +23,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'nomor_telepon' => $request->nomor_telepon,
-            'jenis_kelamin' => $request->jenis_kelamin, // <-- Data disimpan disini
+            'jenis_kelamin' => $request->jenis_kelamin, 
             'password' => Hash::make($request->password),
             'role' => 'wali' 
         ]);
@@ -38,7 +37,6 @@ class AuthController extends Controller
             'name' => 'required|string', // Nama Sekolah
             'email' => 'required|email|unique:users', 
             'nomor_telepon' => 'required|string', 
-            // Sekolah biasanya tidak punya jenis kelamin, jadi saya hapus dari sini
             'password' => 'required|min:6|confirmed'
         ]);
 
@@ -46,7 +44,6 @@ class AuthController extends Controller
             'name' => $request->name, 
             'email' => $request->email,
             'nomor_telepon' => $request->nomor_telepon,
-            // 'jenis_kelamin' => tidak perlu untuk sekolah
             'password' => Hash::make($request->password),
             'role' => 'pengelola' 
         ]);
