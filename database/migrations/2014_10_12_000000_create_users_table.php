@@ -13,6 +13,7 @@ return new class extends Migration
             $table->string('name'); // Nama Wali / Nama Sekolah
             $table->string('email')->unique();
             $table->string('nomor_telepon')->nullable(); // Wajib utk Wali & Sekolah
+            $table->string('jenis_kelamin')->nullable();
             $table->string('role'); // 'admin', 'wali', 'pengelola'
             $table->string('password');
             $table->rememberToken();

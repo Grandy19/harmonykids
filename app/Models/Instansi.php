@@ -44,4 +44,9 @@ class Instansi extends Model
         'kategori_minat' => 'array',
         'galeri_foto' => 'array',
     ];
+
+public function pendaftarans()
+    {
+        return $this->hasMany(Pendaftaran::class, 'instansi_id');
+    }
 }

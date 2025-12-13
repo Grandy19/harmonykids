@@ -26,4 +26,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/forums', [ForumController::class, 'index']);      
     Route::post('/forums', [ForumController::class, 'store']);     
     Route::get('/forums/me', [ForumController::class, 'myPosts']); 
+
+    // Fitur Pendaftaran Sekolah
+    Route::post('/pendaftaran', [App\Http\Controllers\Api\PendaftaranController::class, 'store']); // Kirim Form
+    Route::get('/pendaftaran/me', [App\Http\Controllers\Api\PendaftaranController::class, 'myRegistrations']); // Cek Status
 });

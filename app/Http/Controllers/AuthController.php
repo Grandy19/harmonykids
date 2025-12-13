@@ -9,21 +9,24 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    // 1. REGISTER WALI (Orang Tua)
+    // 1. REGISTER WALI (Orang Tua) -- SUDAH DIPERBAIKI
     public function registerWali(Request $request) {
         $request->validate([
             'name' => 'required|string',
             'email' => 'required|email|unique:users',
             'nomor_telepon' => 'required|string',
-            'password' => 'required|min:6|confirmed' // Cek password_confirmation
+            // Pindah kesini (Wajib pilih Laki-laki/Perempuan)
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan', 
+            'password' => 'required|min:6|confirmed' 
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'nomor_telepon' => $request->nomor_telepon,
+            'jenis_kelamin' => $request->jenis_kelamin, // <-- Data disimpan disini
             'password' => Hash::make($request->password),
-            'role' => 'wali' // Otomatis role WALI
+            'role' => 'wali' 
         ]);
 
         return response()->json(['message' => 'Register Wali Berhasil', 'user' => $user], 201);
@@ -33,8 +36,9 @@ class AuthController extends Controller
     public function registerPengelola(Request $request) {
         $request->validate([
             'name' => 'required|string', // Nama Sekolah
-            'email' => 'required|email|unique:users', // Email Sekolah
-            'nomor_telepon' => 'required|string', // No Telp Sekolah
+            'email' => 'required|email|unique:users', 
+            'nomor_telepon' => 'required|string', 
+            // Sekolah biasanya tidak punya jenis kelamin, jadi saya hapus dari sini
             'password' => 'required|min:6|confirmed'
         ]);
 
@@ -42,6 +46,7 @@ class AuthController extends Controller
             'name' => $request->name, 
             'email' => $request->email,
             'nomor_telepon' => $request->nomor_telepon,
+            // 'jenis_kelamin' => tidak perlu untuk sekolah
             'password' => Hash::make($request->password),
             'role' => 'pengelola' 
         ]);
@@ -49,15 +54,13 @@ class AuthController extends Controller
         return response()->json(['message' => 'Register Pengelola Berhasil', 'user' => $user], 201);
     }
 
-    // 3. LOGIN (Admin, Wali, Pengelola masuk sini semua)
+    // 3. LOGIN (Sama seperti sebelumnya)
     public function login(Request $request) {
         if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json(['message' => 'Email atau Password Salah'], 401);
         }
 
         $user = User::where('email', $request->email)->firstOrFail();
-        
-        // Buat Token Login
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
