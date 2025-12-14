@@ -18,6 +18,11 @@ class User extends Authenticatable
         'nomor_telepon', 
         'role',
         'jenis_kelamin',
+        //Edit Profile
+        'foto_profil',
+        'alamat',
+        'pekerjaan',
+        'hubungan_dengan_anak',
     ];
 
     protected $hidden = [

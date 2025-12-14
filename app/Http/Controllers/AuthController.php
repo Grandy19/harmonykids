@@ -74,4 +74,49 @@ class AuthController extends Controller
         $request->user()->tokens()->delete();
         return response()->json(['message' => 'Logout Berhasil']);
     }
+
+    // 5. UPDATE PROFIL LENGKAP (Wali)
+    public function updateProfile(Request $request) {
+        $user = $request->user(); // Ambil data user yg sedang login
+
+        // Validasi Input Sesuai Gambar Desain
+        $request->validate([
+            'name'          => 'required|string', // Nama Wali (diwakili 'name')
+            // Email harus unik, tapi boleh sama kalau itu email dia sendiri
+            'email'         => 'required|email|unique:users,email,'.$user->id, 
+            'nomor_telepon' => 'required|string',
+            'alamat'        => 'nullable|string',
+            'pekerjaan'     => 'nullable|string',
+            'hubungan_dengan_anak' => 'nullable|string',
+            // Validasi Foto: Harus gambar, max 2MB
+            'foto_profil'   => 'nullable|image|mimes:jpeg,png,jpg|max:2048', 
+        ]);
+
+        // Proses Upload Foto Profil (Jika ada)
+        $fotoPath = $user->foto_profil; // Default pakai foto lama
+        if ($request->hasFile('foto_profil')) {
+            // Simpan di folder public/uploads/profil
+            $file = $request->file('foto_profil');
+            $filename = time() . '_' . $user->id . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads/profil'), $filename);
+            $fotoPath = 'uploads/profil/' . $filename;
+        }
+
+        // 3. Update data di database
+        $user->update([
+            'name'                 => $request->name,
+            'email'                => $request->email,
+            'nomor_telepon'        => $request->nomor_telepon,
+            'alamat'               => $request->alamat,
+            'pekerjaan'            => $request->pekerjaan,
+            'hubungan_dengan_anak' => $request->hubungan_dengan_anak,
+            'foto_profil'          => $fotoPath,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profil berhasil diperbarui',
+            'data'    => $user
+        ]);
+    }
 }
