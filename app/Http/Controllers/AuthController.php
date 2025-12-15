@@ -82,7 +82,6 @@ class AuthController extends Controller
         // Validasi Input Sesuai Gambar Desain
         $request->validate([
             'name'          => 'required|string', // Nama Wali (diwakili 'name')
-            // Email harus unik, tapi boleh sama kalau itu email dia sendiri
             'email'         => 'required|email|unique:users,email,'.$user->id, 
             'nomor_telepon' => 'required|string',
             'alamat'        => 'nullable|string',
