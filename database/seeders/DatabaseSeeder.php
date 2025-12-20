@@ -4,19 +4,28 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Buat 1 Akun Admin
+        // 1. BUAT AKUN PENGELOLA (Untuk tes input data nanti)
+        User::create([
+            'name' => 'Pak Budi Pengelola',
+            'email' => 'pengelola@harmonykids.com',
+            'password' => bcrypt('password'),
+            'role' => 'pengelola', 
+        ]);
+        
+        // 2. BUAT AKUN ADMIN (Untuk tes validasi nanti)
         User::create([
             'name' => 'Admin Utama',
             'email' => 'admin@harmonykids.com',
-            'nomor_telepon' => '08123456789',
+            'password' => bcrypt('password'),
             'role' => 'admin',
-            'password' => Hash::make('admin123'), // Password Admin
         ]);
+
+        // Bagian Instansi::create(...) SUDAH DIHAPUS.
+        // Jadi database tabel 'instansi' bakal bersih (kosong).
     }
 }

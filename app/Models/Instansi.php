@@ -9,44 +9,45 @@ class Instansi extends Model
 {
     use HasFactory;
 
-    protected $table = 'instansi';
+    protected $table = 'instansi'; // Pastikan nama tabel sesuai (biasanya singular/plural, cek di database)
 
+    // Daftar kolom sesuai gambar database Anda
     protected $fillable = [
-        'nama', 
-        'jenis_instansi',
-        'alamat', 
-        'kota', 
-        'biaya_display', 
-        'biaya_angka', 
-        'rating', 
-        'is_popular', 
-        'thumbnail',
-        'deskripsi', 
-        'program_belajar', 
+        'user_id',
+        'nama',
+        'status',          // pending/active
+        'jenis_instansi',  // TK/PG/Daycare
+        'alamat',
+        'kota',
+        
+        // Data Tambahan
+        'deskripsi',
+        'biaya_display',     // Contoh: "Rp 500rb - 1jt"
+        'biaya_angka',       // Contoh: 500000 (untuk sorting)
+        'biaya_pendaftaran',
+        'jam_operasional',
+        'program_belajar',
         'kategori_minat',
-        'biaya_pendaftaran', 
-        'jam_operasional', 
-        'nomor_telepon', 
-        'email', 
-        'galeri_foto',
-
-        // SKOR MEMBANDINGKAN
-        'skor_fasilitas', 
-        'skor_keamanan', 
-        'skor_kenyamanan', 
-        'skor_pengajar', 
-        'skor_layanan'
+        
+        // Kontak & Media
+        'nomor_telepon',
+        'email',
+        'thumbnail',        // Foto utama
+        'galeri_foto',      // Foto-foto lain
+        
+        // Statistik & Skor (Default 0)
+        'rating',
+        'is_popular',
+        'skor_fasilitas',
+        'skor_keamanan',
+        'skor_kenyamanan',
+        'skor_pengajar',
+        'skor_layanan',
     ];
 
-    protected $casts = [
-        'is_popular' => 'boolean',
-        'program_belajar' => 'array',
-        'kategori_minat' => 'array',
-        'galeri_foto' => 'array',
-    ];
-
-public function pendaftarans()
+    // Relasi ke User (Pemilik Sekolah)
+    public function user()
     {
-        return $this->hasMany(Pendaftaran::class, 'instansi_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
