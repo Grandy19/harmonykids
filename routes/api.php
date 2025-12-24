@@ -3,11 +3,14 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// 1. Panggil Controller API yang Benar
-use App\Http\Controllers\Api\ApiAuthController;
-use App\Http\Controllers\Api\InstansiController;
+// --- IMPORT CONTROLLER BARU (HMVC) ---
+use App\Http\Controllers\Api\Auth\AuthController;         // <--- Class Auth baru
+use App\Http\Controllers\Api\Instansi\InstansiController; // <--- Class Instansi baru
+
+// --- IMPORT CONTROLLER LAMA (Belum dipindah) ---
 use App\Http\Controllers\Api\ForumController;
 use App\Http\Controllers\Api\PendaftaranController;
+use App\Http\Controllers\Api\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,35 +19,34 @@ use App\Http\Controllers\Api\PendaftaranController;
 */
 
 // --- AUTHENTICATION (Mobile) ---
-// Gunakan [ApiAuthController], JANGAN [AuthController] biasa.
-Route::post('/register/wali', [ApiAuthController::class, 'registerWali']);
+Route::prefix('auth')->group(function () {
+    // Sesuaikan nama method dengan yang ada di AuthController.php
+    Route::post('/register', [AuthController::class, 'register']); 
+    Route::post('/login', [AuthController::class, 'login']);
+    
+    // Logout butuh token, jadi ditaruh di dalam middleware nanti atau di sini
+    Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+});
 
-// Jalur Login (PASTIKAN BARIS INI ADA & TIDAK DI-KOMENTAR)
-Route::post('/login', [ApiAuthController::class, 'login']);
-
-// Nanti kita buat Login khusus API juga di sini (ApiAuthController)
-// Route::post('/login', [ApiAuthController::class, 'login']); 
-
-
-// --- PUBLIC FEATURES ---
+// --- PUBLIC FEATURES (Instansi) ---
 Route::get('/instansi', [InstansiController::class, 'index']);
 Route::get('/instansi/{id}', [InstansiController::class, 'show']);
-Route::post('/instansi', [InstansiController::class, 'store']);
-Route::post('/instansi/compare', [InstansiController::class, 'compare']);
-
+// Route::post('/instansi', [InstansiController::class, 'store']); // Matikan dulu kalau belum ada fitur create
+// Route::post('/instansi/compare', [InstansiController::class, 'compare']); // Matikan dulu kalau belum ada
 
 // --- PRIVATE FEATURES (Harus Login / Punya Token) ---
 Route::middleware('auth:sanctum')->group(function () {
     
-    // Logout API
-    // Route::post('/logout', [ApiAuthController::class, 'logout']);
+    // 1. Fitur Profil
+    Route::get('/profile', [ProfileController::class, 'fetch']);
+    Route::post('/profile/update', [ProfileController::class, 'update']);
 
-    // Forum Diskusi
+    // 2. Forum Diskusi
     Route::get('/forums', [ForumController::class, 'index']);      
     Route::post('/forums', [ForumController::class, 'store']);     
     Route::get('/forums/me', [ForumController::class, 'myPosts']); 
 
-    // Fitur Pendaftaran Sekolah
+    // 3. Fitur Pendaftaran Sekolah
     Route::post('/pendaftaran', [PendaftaranController::class, 'store']); 
     Route::get('/pendaftaran/me', [PendaftaranController::class, 'myRegistrations']); 
 });

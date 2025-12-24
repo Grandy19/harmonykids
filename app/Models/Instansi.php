@@ -9,43 +9,46 @@ class Instansi extends Model
 {
     use HasFactory;
 
-    protected $table = 'instansi'; // Pastikan nama tabel sesuai (biasanya singular/plural, cek di database)
+    protected $table = 'instansi';
 
-    // Daftar kolom sesuai gambar database Anda
     protected $fillable = [
-        'user_id',
-        'nama',
-        'status',          // pending/active
-        'jenis_instansi',  // TK/PG/Daycare
-        'alamat',
-        'kota',
-        
-        // Data Tambahan
-        'deskripsi',
-        'biaya_display',     // Contoh: "Rp 500rb - 1jt"
-        'biaya_angka',       // Contoh: 500000 (untuk sorting)
-        'biaya_pendaftaran',
-        'jam_operasional',
-        'program_belajar',
-        'kategori_minat',
-        
-        // Kontak & Media
-        'nomor_telepon',
-        'email',
-        'thumbnail',        // Foto utama
-        'galeri_foto',      // Foto-foto lain
-        
-        // Statistik & Skor (Default 0)
-        'rating',
-        'is_popular',
-        'skor_fasilitas',
-        'skor_keamanan',
-        'skor_kenyamanan',
-        'skor_pengajar',
-        'skor_layanan',
+        'user_id', 'nama', 'status', 'jenis_instansi', 'alamat', 'kota',
+        'deskripsi', 'biaya_display', 'biaya_angka', 'biaya_pendaftaran',
+        'jam_operasional', 'program_belajar', 'kategori_minat',
+        'nomor_telepon', 'email', 'thumbnail', 'galeri_foto',
+        'rating', 'is_popular', 'skor_fasilitas', 'skor_keamanan',
+        'skor_kenyamanan', 'skor_pengajar', 'skor_layanan',
     ];
 
-    // Relasi ke User (Pemilik Sekolah)
+    protected $casts = [
+        'program_belajar' => 'array',
+        'kategori_minat' => 'array',
+        'galeri_foto' => 'array',
+        'is_popular' => 'boolean',
+        'rating' => 'double',
+    ];
+
+    // --- INI BAGIAN PENTING YANG TADI HILANG ---
+    // Agar $instansi->append('thumbnail_url') di Controller tidak error
+    protected $appends = ['thumbnail_url'];
+
+    public function getThumbnailUrlAttribute()
+    {
+        // Jika kolom 'thumbnail' kosong, return null
+        if (!$this->thumbnail) {
+            return null;
+        }
+
+        // Jika isinya link online (http...), kembalikan langsung
+        if (filter_var($this->thumbnail, FILTER_VALIDATE_URL)) {
+            return $this->thumbnail;
+        }
+        
+        // Jika isinya nama file lokal, panggil via asset storage
+        return asset('storage/' . $this->thumbnail);
+    }
+
+    // Relasi ke User
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
